@@ -1,0 +1,327 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Swagger Ignite Sample",
+    "description": "Exemplo de documentação com swagger.",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "jardel@bordignon.dev"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "Documentação do Swagger",
+    "url": "http://swagger.io"
+  },
+  "tags": [
+    {
+      "name": "User",
+      "description": "Operações relacionadas aos registros de usuários",
+      "externalDocs": {
+        "description": "Mais detalhes sobre o registro",
+        "url": "http://sitename.com/documentation/store/users"
+      }
+    }
+  ],
+
+  "paths": {
+
+    "/users": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Criar um novo usuário",
+        "description": "Criar um novo usuário, informar name e email",
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/CreateUserDTO"
+              },
+              "example": {
+                "name": "John Doe",
+                "email": "johndoe@email.com"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "E-mail já registrado",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+
+
+      "get": {
+        "tags": ["users"],
+        "summary": "Retorna uma lista de usuários",
+        "operationId": "getUsers",
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuário inválido",
+            "content": {}
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {}
+          }
+        }
+      }
+    },
+
+    "/users/{user_id}/admin": {
+      "patch": {
+        "tags": ["users"],
+        "summary": "Torna administrador um determinado usuário",
+        "operationId": "SetUserToAdmin",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Parâmetro user_id é necessário",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAdmin"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuário inválido",
+            "content": {}
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {}
+          }
+        }
+      }
+    },
+
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Retorna um usuário específico",
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Parâmetro user_id é necessário",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuário inválido",
+            "content": {}
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {}
+          }
+        }
+      },
+      "put": {
+        "tags": ["users"],
+        "summary": "Alterar o registro de um usuário",
+        "description": "Necessário estar autenticado.",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "user_id é necessário para efetuar a alteração",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated user object",
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid user supplied",
+            "content": {}
+          },
+          "404": {
+            "description": "User not found",
+            "content": {}
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      },
+      "delete": {
+        "tags": ["users"],
+        "summary": "Deletar um usuário específico",
+        "description": "É necessário estar autenticado, um usuário pode deletar apenas sua conta, um administrador pode deletar qualquer conta.",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "O user_id é necessário",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Usuário deletado com sucesso",
+            "content": {}
+          },
+          "400": {
+            "description": "ID de usuário inválido",
+            "content": {}
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+
+
+  "components": {
+    "schemas": {
+
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "admin": {
+            "type": "boolean",
+            "default": false
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+
+      "UserAdmin": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "admin": {
+            "type": "boolean",
+            "default": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+
+      "CreateUserDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      }
+
+    }
+  }
+}
